@@ -1,12 +1,12 @@
 import React from 'react';
 
 import styled from 'styled-components';
-import BooksPage from '../books';
+import BookPage from '../book';
 
-export const BooksPageRoute: React.FC<{}> = () => {
+export const BookPageRoute: React.FC<{}> = () => {
   return (
     <Container>
-      <BooksPage />
+      <BookPage />
     </Container>
   );
 };
@@ -14,5 +14,5 @@ export const BooksPageRoute: React.FC<{}> = () => {
 const Container = styled.div`
   width: 75%;
   margin: auto;
-  padding: 20px;
+  padding: 40px;
 `;

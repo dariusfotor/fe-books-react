@@ -1,30 +1,30 @@
-import React from 'react'
-import { useFormik } from 'formik'
-import * as Yup from 'yup'
-import styled from 'styled-components'
-import Button from '@mui/material/Button'
-import { TextField } from '@mui/material'
-import axios from 'axios'
-import { useNavigate } from 'react-router-dom'
-import { useMutation } from 'react-query'
-import { User } from '../../../store/users/types'
+import React from 'react';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import styled from 'styled-components';
+import Button from '@mui/material/Button';
+import { TextField } from '@mui/material';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { useMutation } from 'react-query';
+import { User } from '../../../models/users/types';
 
 const Register: React.FC<{}> = () => {
-  let navigate = useNavigate()
+  let navigate = useNavigate();
 
   const mutation = useMutation(
     (user: User) => {
-      return axios.post('/auth/register', user)
+      return axios.post('/auth/register', user);
     },
     {
       onSuccess: () => {
-        navigate('/login')
+        navigate('/login');
       },
       onError: () => {
-        alert(mutation.error)
+        alert(mutation.error);
       },
-    },
-  )
+    }
+  );
 
   const validationSchema = Yup.object().shape({
     name: Yup.string()
@@ -33,7 +33,7 @@ const Register: React.FC<{}> = () => {
       .required('Privalomas laukas'),
     email: Yup.string().email('Invalid email').required('Privalomas laukas'),
     password: Yup.string().required('Privalomas laukas'),
-  })
+  });
 
   const formik = useFormik({
     initialValues: {
@@ -46,9 +46,9 @@ const Register: React.FC<{}> = () => {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      mutation.mutate(values)
+      mutation.mutate(values);
     },
-  })
+  });
 
   return (
     <Container>
@@ -129,10 +129,10 @@ const Register: React.FC<{}> = () => {
         </div>
       </form>
     </Container>
-  )
-}
+  );
+};
 
-export default Register
+export default Register;
 
 const Container = styled.div`
   width: 100%;
@@ -150,4 +150,4 @@ const Container = styled.div`
     font-size: 12px;
     margin-top: 15px;
   }
-`
+`;

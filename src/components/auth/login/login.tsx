@@ -1,33 +1,21 @@
-import React from 'react'
-import { useFormik } from 'formik'
-import * as Yup from 'yup'
-import styled from 'styled-components'
-import Button from '@mui/material/Button'
-import { TextField } from '@mui/material'
-import axios from 'axios'
-import { useNavigate } from 'react-router-dom'
-import { useMutation } from 'react-query'
+import React, { useContext } from 'react';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import styled from 'styled-components';
+import Button from '@mui/material/Button';
+import { TextField } from '@mui/material';
+import { AuthContext } from '../authService';
+import { useNavigate } from 'react-router';
+import { ROUTES } from '../../routes';
 
 const Login: React.FC<{}> = () => {
-  let navigate = useNavigate()
+  let navigate = useNavigate();
+  const { loginMutation } = useContext(AuthContext);
 
-  const loginAsync = async (user: { email: string; password: string }) => {
-    return await axios.post('/auth/login', user)
-  }
-
-  const mutation = useMutation(loginAsync, {
-    onSuccess: (res) => {
-      localStorage.setItem('token', res.data?.data)
-      navigate('/books')
-    },
-    onError: () => {
-      alert(mutation.error)
-    },
-  })
   const validationSchema = Yup.object().shape({
     email: Yup.string().required('Privalomas laukas'),
     password: Yup.string().required('Privalomas laukas'),
-  })
+  });
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -35,9 +23,10 @@ const Login: React.FC<{}> = () => {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      mutation.mutate(values)
+      loginMutation.mutate(values);
+      navigate(ROUTES.BooksPage);
     },
-  })
+  });
 
   return (
     <Container>
@@ -75,10 +64,10 @@ const Login: React.FC<{}> = () => {
         </Button>
       </form>
     </Container>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
 
 const Container = styled.div`
   width: 100%;
@@ -91,4 +80,4 @@ const Container = styled.div`
     flex-direction: column;
     margin-top: 20px;
   }
-`
+`;

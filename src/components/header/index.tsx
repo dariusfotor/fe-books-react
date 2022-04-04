@@ -1,21 +1,24 @@
-import React from 'react'
-import styled from 'styled-components'
-import { NavLink } from 'react-router-dom'
-import UserMenu from './menu'
+import React, { useContext } from 'react';
+import styled from 'styled-components';
+import { NavLink } from 'react-router-dom';
+import UserMenu from './menu';
+import { AuthContext } from '../auth/authService';
+import { ROUTES } from '../routes';
 
 const Header: React.FC<{}> = () => {
+  const { token } = useContext(AuthContext);
   return (
     <Container>
-      {!localStorage.getItem('token') ? (
+      {!token ? (
         <>
           <NavLink
-            to="/login"
+            to={ROUTES.LoginPage}
             className={({ isActive }) => (isActive ? 'active' : 'inactive')}
           >
             Prisijungti
           </NavLink>
           <NavLink
-            to="/register"
+            to={ROUTES.RegisterPage}
             className={({ isActive }) => (isActive ? 'active' : 'inactive')}
           >
             Registruotis
@@ -25,9 +28,9 @@ const Header: React.FC<{}> = () => {
         <UserMenu />
       )}
     </Container>
-  )
-}
-export default Header
+  );
+};
+export default Header;
 const Container = styled.div`
   display: flex;
   justify-content: flex-end;
@@ -54,4 +57,4 @@ const Container = styled.div`
     transition: 0.3s;
     transform: translateY(-2px);
   }
-`
+`;

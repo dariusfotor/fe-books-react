@@ -1,12 +1,19 @@
-import React from 'react'
-import Header from '../header'
+import React from 'react';
+import styled from 'styled-components';
+import Header from '../header';
 
-const AppLayout: React.FC<{}> = () => {
-    return (
-        <div>
-            <Header />
-        </div>
-    )
-}
+const AppLayout: React.FC<{}> = ({ children }) => {
+  return (
+    <div>
+      <Header />
+      <Main>{children}</Main>
+    </div>
+  );
+};
 
-export default AppLayout
+export default AppLayout;
+
+const Main = styled.div`
+  width: 100%;
+  overflow-y: auto;
+`;

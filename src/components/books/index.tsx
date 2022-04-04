@@ -1,41 +1,23 @@
-import { useQuery } from 'react-query'
-import React from 'react'
-import styled from 'styled-components'
-import axios from 'axios'
-import CardComp from './card'
-import { Book } from '../../store/books/types'
-import Button from '@mui/material/Button'
-import AddEditBookDialog from './addEditDialog'
-import Alert from '@mui/material/Alert'
+import React from 'react';
+import styled from 'styled-components';
+import CardComp from './card';
+import { Book } from '../../models/books/types';
+import Button from '@mui/material/Button';
+import AddEditBookDialog from '../reuseable-components/modal-add-edit';
+import { BooksContext } from '../booksContext';
 
 const BooksPage: React.FC<{}> = () => {
-  const getBooks = async () => {
-    const { data } = await axios.get('/books')
-    return data
-  }
+  const { books } = React.useContext(BooksContext);
 
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = React.useState(false);
 
   const openDialog = (action: boolean) => {
-    setOpen(action)
-  }
-  const { isLoading, isError, data } = useQuery('books', getBooks)
-
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
-
-  if (isError) {
-    return (
-      <div>
-        <Alert severity="error">This is an error alert — check it out!</Alert>
-      </div>
-    )
-  }
+    setOpen(action);
+  };
 
   return (
     <Container>
-      <h3 className="title">Books List</h3>
+      <h3 className="title">Knygų sąrašas</h3>
       <div>
         <Button
           variant="contained"
@@ -45,20 +27,20 @@ const BooksPage: React.FC<{}> = () => {
           +
         </Button>
       </div>
-      {data.data.map((book: Book) => {
+      {books.map((book: Book) => {
         return (
           <div className="card" key={book.id}>
             <CardComp data={book} />
           </div>
-        )
+        );
       })}
 
       <AddEditBookDialog openDialog={openDialog} open={open} mode={'create'} />
     </Container>
-  )
-}
+  );
+};
 
-export default BooksPage
+export default BooksPage;
 
 const Container = styled.div`
   .title {
@@ -67,4 +49,4 @@ const Container = styled.div`
   .card {
     margin: 10px 0;
   }
-`
+`;
