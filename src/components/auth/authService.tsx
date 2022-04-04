@@ -34,26 +34,26 @@ export const AuthContextProvider: React.FC = memo(({ children }) => {
   const [refreshAccessToken, setRefreshAccessToken] = useState<string>();
   const [user, setUser] = useState<{ id: number; name: string } | null>(null);
 
-  // useEffect(() => {
-  //   console.log('useefect');
-  //   setToken(localStorage.getItem('accesstoken')?.split(' ')[1]);
-  //   setRefreshAccessToken(localStorage.getItem('refreshtoken')?.split(' ')[1]);
-  // }, []);
+  useEffect(() => {
+    console.log('useefect');
+    setToken(localStorage.getItem('accesstoken')?.split(' ')[1]);
+    setRefreshAccessToken(localStorage.getItem('refreshtoken')?.split(' ')[1]);
+  }, []);
 
-  // useEffect(() => {
-  //   if (refreshAccessToken) {
-  //     //issitraukti accesstoken expiretime ir nistatyti i settimeout
-  //     const handleSetTimeout = setTimeout(() => {
-  //       refreshTokenMutation.mutate(refreshAccessToken || '');
-  //     }, 3000);
-  //     return () => clearTimeout(handleSetTimeout);
-  //   }
-  // }, [token, refreshAccessToken]);
+  useEffect(() => {
+    if (refreshAccessToken) {
+      //issitraukti accesstoken expiretime ir nistatyti i settimeout
+      const handleSetTimeout = setTimeout(() => {
+        refreshTokenMutation.mutate(refreshAccessToken || '');
+      }, 3000);
+      return () => clearTimeout(handleSetTimeout);
+    }
+  }, [token, refreshAccessToken]);
 
-  // useEffect(() => {
-  //   localStorage.setItem('accesstoken', token || '');
-  //   updateDefaultHeaders({ authorization: token || '' });
-  // }, [token]);
+  useEffect(() => {
+    localStorage.setItem('accesstoken', token || '');
+    updateDefaultHeaders({ authorization: token || '' });
+  }, [token]);
 
   const refreshToken = async (token: string) => {
     return await axios.post('/auth/refresh-token', { token: token });
