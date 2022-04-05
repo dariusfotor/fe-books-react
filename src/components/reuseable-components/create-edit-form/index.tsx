@@ -74,7 +74,6 @@ const BookForm = (props: Props) => {
       initialValues={initialValues}
       validationSchema={validationSchema}
       onSubmit={(values) => {
-        console.log('selectedPhoto', selectedPhoto);
         uploadImage(selectedPhoto);
         // props.addEditBook(values);
         // props.handleClose();

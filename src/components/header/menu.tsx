@@ -2,12 +2,13 @@ import React, { useContext } from 'react';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../auth/authService';
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '../routes';
 
 const UserMenu = () => {
-  const { user, logoutMutation } = useContext(AuthContext);
   const navigate = useNavigate();
+  const { user, logoutMutation } = useContext(AuthContext);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: any) => {
@@ -15,6 +16,11 @@ const UserMenu = () => {
   };
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const logOut = () => {
+    logoutMutation.mutate();
+    navigate(ROUTES.LoginPage);
   };
 
   return (
@@ -38,7 +44,7 @@ const UserMenu = () => {
         }}
       >
         <MenuItem onClick={handleClose}>Profilis</MenuItem>
-        <MenuItem onClick={logoutMutation.mutate()}>Atsijungti</MenuItem>
+        <MenuItem onClick={logOut}>Atsijungti</MenuItem>
       </Menu>
     </div>
   );

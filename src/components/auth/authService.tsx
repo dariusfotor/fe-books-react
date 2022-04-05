@@ -1,10 +1,10 @@
-import { createContext, useEffect, useState, memo } from 'react';
+import { createContext, useEffect, useState, memo, useMemo } from 'react';
 import axios from 'axios';
 import { useMutation } from 'react-query';
 
 export const AuthContext = createContext<{
   token?: string;
-  setAccessToken: (val: string) => void;
+  setToken: (val: string) => void;
   user: { id: number; name: string } | null;
   setUser: any;
   setRefreshAccessToken: (val: string) => void;
@@ -12,7 +12,7 @@ export const AuthContext = createContext<{
   logoutMutation: any;
 }>({
   token: '',
-  setAccessToken: () => {},
+  setToken: () => {},
   user: null,
   setUser: () => {},
   setRefreshAccessToken: () => {},
@@ -28,16 +28,13 @@ export const updateDefaultHeaders = (headers: { [key: string]: string }) => {
 };
 
 export const AuthContextProvider: React.FC = memo(({ children }) => {
-  console.log('render');
-  const [accessToken, setAccessToken] = useState<string>();
   const [token, setToken] = useState<string>();
   const [refreshAccessToken, setRefreshAccessToken] = useState<string>();
   const [user, setUser] = useState<{ id: number; name: string } | null>(null);
 
   useEffect(() => {
-    console.log('useefect');
-    setToken(localStorage.getItem('accesstoken')?.split(' ')[1]);
-    setRefreshAccessToken(localStorage.getItem('refreshtoken')?.split(' ')[1]);
+    setToken(localStorage.getItem('accesstoken') || '');
+    setRefreshAccessToken(localStorage.getItem('refreshtoken') || '');
   }, []);
 
   useEffect(() => {
@@ -45,7 +42,7 @@ export const AuthContextProvider: React.FC = memo(({ children }) => {
       //issitraukti accesstoken expiretime ir nistatyti i settimeout
       const handleSetTimeout = setTimeout(() => {
         refreshTokenMutation.mutate(refreshAccessToken || '');
-      }, 3000);
+      }, 200000);
       return () => clearTimeout(handleSetTimeout);
     }
   }, [token, refreshAccessToken]);
@@ -60,7 +57,6 @@ export const AuthContextProvider: React.FC = memo(({ children }) => {
   };
   const refreshTokenMutation = useMutation(refreshToken, {
     onSuccess: (res) => {
-      console.log(res);
       setToken(res.data?.accessToken);
       setRefreshAccessToken(res.data?.refreshToken);
     },
@@ -79,10 +75,16 @@ export const AuthContextProvider: React.FC = memo(({ children }) => {
         id: res.data?.data?.user.id,
         name: res.data?.data?.user.name,
       });
-      setToken(res.data?.data.accessToken);
-      setRefreshAccessToken(res.data?.data.refreshToken);
-      localStorage.setItem('accesstoken', res.data?.data.accessToken);
-      localStorage.setItem('refreshtoken', res.data?.data.refreshToken);
+      setToken(res.data?.data.accessToken.split(' ')[1]);
+      setRefreshAccessToken(res.data?.data.refreshToken.split(' ')[1]);
+      localStorage.setItem(
+        'accesstoken',
+        res.data?.data.accessToken.split(' ')[1]
+      );
+      localStorage.setItem(
+        'refreshtoken',
+        res.data?.data.refreshToken.split(' ')[1]
+      );
       updateDefaultHeaders({ authorization: res.data?.data.accessToken });
     },
     onError: (error) => {
@@ -91,31 +93,39 @@ export const AuthContextProvider: React.FC = memo(({ children }) => {
   });
 
   const logout = async () => {
-    return await axios.post('/auth/logout', refreshAccessToken);
+    return await axios.post('/auth/logout', { refToken: refreshAccessToken });
   };
 
   const logoutMutation = useMutation(logout, {
     onSuccess: (res) => {
       localStorage.clear();
-      setAccessToken('');
+      setToken('');
+      setRefreshAccessToken('');
     },
     onError: (error) => {
       alert(error);
     },
   });
-  return (
-    <AuthContext.Provider
-      value={{
-        token,
-        setAccessToken,
-        user,
-        setUser,
-        setRefreshAccessToken,
-        loginMutation,
-        logoutMutation,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+
+  const value = useMemo(
+    () => ({
+      token,
+      setToken,
+      user,
+      setUser,
+      setRefreshAccessToken,
+      loginMutation,
+      logoutMutation,
+    }),
+    [
+      token,
+      setToken,
+      user,
+      setUser,
+      setRefreshAccessToken,
+      loginMutation,
+      logoutMutation,
+    ]
   );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 });
